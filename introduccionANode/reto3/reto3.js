@@ -7,7 +7,6 @@ const rl = readLine.createInterface({
     output: process.stdout
 })
 
-function generaObj() {
     let objeto = {}
     rl.question('Introduce un valor para name' + "\n", (nombre) => {
         objeto.name = nombre
@@ -18,21 +17,18 @@ function generaObj() {
 
                 fs.writeFile("objeto.json", JSON.stringify(objeto), (err) => {
                     if (err) {
-                        console.error("Algo ha salido mal", err)
+                        console.error("No se ha podido crear el archivo", err)
                     }
                     console.log("Archivo creado");
 
                     fs.readFile("objeto.json", 'utf8', (err, contenido) => {
                         if (err) {
-                            console.error("Upsss!", err)
+                            console.error("No se puede leer el archivo", err)
                         }
-                        console.log("Impimiendo archivo", contenido);
+                        console.log("Imprimiendo el archivo" + "\n", contenido);
                         rl.close()
                     })
                 })
             })
         })
     })
-}
-generaObj()
-
