@@ -1,4 +1,6 @@
-const wR = require('./writeAndReadObject')
-const rC = require('./readConsole')
+const wR = require("./writeAndReadObject");
+const rC = require("./readConsole");
 
-rC.readConsole(obj => wR.writeAndRead("./objeto.json", obj))
+rC.readConsole()
+  .then((obj) => obj)
+  .then((obj) => wR.writeAndRead("objeto.json", obj));

@@ -1,17 +1,17 @@
-const readLine = require('readline')
+const readLine = require("readline");
 
 function pregunta(pregunta) {
-    const question = new Promise((resolve, reject) => {
-        const rl = readLine.createInterface({
-            input: process.stdin,
-            output: process.stdout
-        })
-        rl.question(pregunta, (respuesta) => {
-            resolve(respuesta)
-            rl.close();
-        })
-    })
-    return question
+  const question = new Promise((resolve, reject) => {
+    const rl = readLine.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    rl.question(pregunta, (respuesta) => {
+      resolve(respuesta);
+      rl.close();
+    });
+  });
+  return question;
 }
 
 // function readConsole(callback){
@@ -32,20 +32,18 @@ function pregunta(pregunta) {
 //     .catch(err => console.log(err))
 // }
 
-async function readConsole(callback) {
+async function readConsole() {
+  try {
+    let objeto = {};
 
-    try {
+    objeto.name = await pregunta("Introduce tu nombre:" + "\n");
+    objeto.surname = await pregunta("Introduce tu apellido:" + "\n");
+    objeto.age = await pregunta("Introduce tu edad:" + "\n");
 
-        let objeto = {}
-
-        objeto.name = await pregunta("Introduce tu nombre:" + "\n")
-        objeto.surname = await pregunta("Introduce tu apellido:" + "\n")
-        objeto.age = await pregunta("Introduce tu edad:" + "\n")
-
-        return callback(objeto)
-    } catch (err) {
-        console.log(err);
-    }
+    return Promise.resolve(objeto);
+  } catch (err) {
+    console.log(err);
+  }
 }
 
-module.exports = { readConsole }
+module.exports = { readConsole };
