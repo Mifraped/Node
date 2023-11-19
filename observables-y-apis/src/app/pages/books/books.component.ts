@@ -1,32 +1,73 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { Book } from 'src/app/models/book';
+import { Respuesta } from 'src/app/models/respuesta';
 import { BooksService } from 'src/app/shared/books.service';
 
 @Component({
   selector: 'app-books',
   templateUrl: './books.component.html',
-  styleUrls: ['./books.component.css']
+  styleUrls: ['./books.component.css'],
 })
 export class BooksComponent {
+  public cargando: boolean = true;
+  public buscando: boolean = false;
+  public libros: Book | Book[] = [];
+  @ViewChild('ref') ref: ElementRef;
 
-  public buscando: boolean = false
-  public buscado: Book
+  constructor(
+    public bookService: BooksService,
+    private toastr: ToastrService
+  ) {}
 
-  @ViewChild("ref") ref:ElementRef
-
-  constructor(public bookService: BooksService, private toastr: ToastrService) { }
-
-  public buscaLibro(inpRef: HTMLInputElement) {
-    if(inpRef.value === "") this.buscando = false
-    else if(this.bookService.getAll().some(elem => elem.id_book === Number(inpRef.value))){
-      this.buscando = true
-      this.buscado = this.bookService.getOne(Number(inpRef.value))}
-    else this.toastr.error(`No existe la referencia ${inpRef.value}`)
+  ngOnInit() {
+    this.muestraLibros();
   }
 
-    public cambioBuscando(){
-      this.buscando = false
-      this.ref.nativeElement.value = ""
-    }
+  public muestraLibros() {
+    this.bookService.getAll().subscribe((resp: Respuesta) => {
+      if (resp.error) {
+        this.toastr.error(`${resp.message}`);
+        this.cargando = false;
+      } else {
+        this.libros = resp.data;
+        this.cargando = false;
+        this.buscando = false;
+      }
+    });
+  }
+
+  public buscaLibro(inpRef: HTMLInputElement) {
+    this.bookService
+      .getOne(Number(inpRef.value))
+      .subscribe((resp: Respuesta) => {
+        if (inpRef.value) {
+          if (resp.error) {
+            this.toastr.error(resp.message);
+          } else {
+            this.buscando = true;
+            this.libros = resp.data;
+          }
+        } else {
+          this.buscando = false;
+          this.cargando = true;
+          this.muestraLibros();
+        }
+      });
+  }
+
+  public eliminaTargeta(id_libro: number) {
+    this.bookService.delete(id_libro).subscribe((resp: Respuesta) => {
+      if (resp.error) {
+        this.toastr.error(resp.message);
+      } else {
+        this.toastr.success(resp.message);
+        this.buscando = false;
+        this.cargando = true;
+        this.ref.nativeElement.value = '';
+        this.libros = resp.data;
+        this.muestraLibros();
+      }
+    });
+  }
 }

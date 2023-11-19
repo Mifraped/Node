@@ -55,37 +55,45 @@ function getBooks(req, res) {
     }
   } else if (!id) {
     if (libros.length > 0) {
-      respuesta = { error: false, codigo: 200, data: libros };
+      respuesta = { error: false, codigo: 200, message: null, data: libros };
     } else {
-      respuesta = { error: true, codigo: 200, message: "No hay ningun libro" };
+      respuesta = {
+        error: true,
+        codigo: 200,
+        message: "No hay ningun libro",
+        data: null,
+      };
     }
   }
   res.send(respuesta);
 }
 
 function addBook(req, res) {
-  let newLibro = new Book(
-    req.body.title,
-    req.body.type,
-    req.body.author,
-    req.body.price,
-    req.body.photo,
-    req.body.id_book,
-    req.body.id_user
-  );
-  libros.push(newLibro);
-  let respuesta = {
-    error: false,
-    codigo: 200,
-    message: `Añadido ${newLibro.title}`,
-  };
+  let respuesta;
+  if (!libros.some((libro) => libro.id_book === req.body.id_book)) {
+    libros.push(req.body);
+    respuesta = {
+      error: false,
+      codigo: 200,
+      message: `Añadido ${req.body.title}`,
+      data: null,
+    };
+  } else {
+    respuesta = {
+      error: true,
+      codigo: 200,
+      message: `La referencia ${req.body.id_book} ya existe`,
+      data: null,
+    };
+  }
+
   res.send(respuesta);
 }
 
 function editBook(req, res) {
-  let id = req.query.id;
+  let id = req.body.id_book;
   let respuesta;
-  if (libros.some((libro) => libro.id_book == id)) {
+  if (libros.some((libro) => libro.id_book === id)) {
     let indice = libros.indexOf(libros.find((libro) => libro.id_book == id));
     libros[indice].title = req.body.title;
     libros[indice].type = req.body.type;
@@ -106,7 +114,6 @@ function editBook(req, res) {
       message: `No hay ningun libro con esa referencia`,
     };
   }
-
   res.send(respuesta);
 }
 
@@ -122,12 +129,14 @@ function deleteBook(req, res) {
       error: false,
       codigo: 200,
       message: `Eliminada la referencia ${id}`,
+      data: libros,
     };
   } else {
     respuesta = {
       error: true,
       codigo: 200,
       message: `No hay ningun libro con esa referencia`,
+      data: null,
     };
   }
   res.send(respuesta);
