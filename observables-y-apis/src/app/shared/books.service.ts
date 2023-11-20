@@ -8,6 +8,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class BooksService {
+  public libros: Book | Book[] = [];
+
   private url = 'http://localhost:3000/books';
 
   constructor(private toastr: ToastrService, private http: HttpClient) {}

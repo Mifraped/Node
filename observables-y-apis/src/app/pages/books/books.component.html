@@ -19,11 +19,11 @@
     <ng-container *ngIf="cargando; else cargado"> </ng-container>
     <ng-template #cargado>
       <ng-container *ngIf="!buscando; else otro">
-        <ng-container *ngIf="libros.length > 0; else esFalso">
+        <ng-container *ngIf="bookService.libros.length > 0; else esFalso">
           <app-card
             [libroPadre]="libro"
             [even]="even"
-            *ngFor="let libro of libros; let even = even"
+            *ngFor="let libro of bookService.libros; let even = even"
             (eventoElimTarg)="eliminaTargeta($event)"
           ></app-card>
         </ng-container>
@@ -35,7 +35,7 @@
       </ng-container>
       <ng-template #otro>
         <app-card
-          [libroPadre]="libros"
+          [libroPadre]="bookService.libros"
           (eventoElimTarg)="eliminaTargeta($event)"
         ></app-card>
       </ng-template>
